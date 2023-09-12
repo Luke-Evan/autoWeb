@@ -2,6 +2,12 @@
 
 https://www.byhy.net/tut/auto/selenium/01/
 
+## 原理
+
+安装selenium库以及浏览器驱动
+
+简化代码可以在系统环境变量加上驱动的文件目录
+
 ## WebDriver
 
 创建WebDriver 实例对象 指明使用哪个浏览器的驱动
@@ -19,18 +25,16 @@ wd.get ("https://www.baidu.com")
 
 ## 选择网页元素
 
-
-
 1. *通过元素**ID***
 
    ```python
-   element_make_sure = wd.find_element(By.ID, 'su')
+   element = wd.find_element(By.ID, 'su')
    ```
 
 2. *通过元素**class**名*
 
    ```python
-   element = wd.find_elements(By.CLASS_NAME, 'foot-async-script')
+   elements = wd.find_elements(By.CLASS_NAME, 'foot-async-script')
    ```
 
    注意 (find_element 和 find_elements的区别)
@@ -40,29 +44,36 @@ wd.get ("https://www.baidu.com")
    | 返回对象 | 如果有多个符合条件的元素返回第一个                 | 返回所有符合条件的元素的列表 |
    | 异常处理 | 没有符合的元素*抛出* *NoSuchElementException* 异常 | 返回空列表                   |
 
-3. *标签名字*
+> ```python
+> for element in elements:
+>     print(element.text)
+> ```
+>
+> 可以输出元素对应文本内容
 
-   ```python
-   element = wd.find_elements(By.TAG_NAME, "div")
-   ```
+3. *通过标签名字*
 
-4. *通过WebElement对象选择元素*
+```python
+element = wd.find_elements(By.TAG_NAME, "div")
+```
+
+4. *通过WebElement对象*(find_element方法返回的就是webelement对象)
 
    - WebDriver对象选择元素范围是整个网页
+
    - WebElement对象选择元素则是在元素内寻找
 
-   ```python
-   element = wd.find_elements(By.ID,'container')
-   spans = element.find_elements(By.TAG_NAME, 'span')
-   ```
+
+```python
+element = wd.find_elements(By.ID,'container')
+spans = element.find_elements(By.TAG_NAME, 'span')
+```
 
 
 
 ## 等待元素出现
 
 程序执行速度远大于网页响应的速度，所以执行的时候往往会因为网页速度慢而导致找不到接下来的元素
-
-
 
 解决办法：
 
@@ -87,35 +98,70 @@ wd.get ("https://www.baidu.com")
    wd.implicitly_wait(10)
    ```
 
-   加入这个代码后，后续所有的find_element 或者 find_elements 方法没有找到元素是，并不立即返回错误，而是每隔半秒钟重新寻找该元素，直到元素找到
+   加入以上代码后，那么后续所有的 `find_element` 或者 `find_elements` 之类的方法调用 都会采用下面的策略：
+
+   若**找不到该元素**并不立即返回错误，而是每隔半秒钟重新寻找该元素，直到元素找到
 
    如果超出了最长时间（括号内规定，上述代码为10秒）,则报出错误
-
    
+   > implicitly ： 隐式地，含蓄地
+   >
+   > 但有时就只能依靠方法一`sleep(1)`，因为点击某元素的特定文本内容可能才会更新下一个元素的内容
+   >
+   > [bilibili 有implicitwait, sleep就没有用了吗](https://www.bilibili.com/video/BV1Z4411o7TA/?p=35&vd_source=65c0b265ff4f8014de15e5f690699b25)
 
 ## 操控元素
 
-- 点击 .click         (默认点击正中间)
-- 输入内容 .send_keys ("输入内容")
-- 清空内容 .clear 
-- 获取元素文本内容 .text     (尖括号内的文本)
+### 点击元素 
+
+.click         (默认点击正中间)
+
+### 输入内容
+
+ .send_keys ("输入内容")
+
+### 清空内容 
+
+.clear 方法
+
+处理有时候输入框已经有默认文本的情况
+
+### 获取元素信息
+
+- 获取文本内容
+
+  - element .text     (尖括号内的文本)
+
   - 对于input的输入框, 如果要获得已经输入的文本, 用.get_attribute ('value')
-  - 如果.text出问题,可以尝试 innerText  或者 textContent
+
+  - .text 出了些问题时
+
+    ```html
+    .get_attribute('innerText')
+    .get_attribute('textContent')
+    ```
+
+> 有时候，元素的文本内容没有展示在界面上，或者没有完全完全展示在界面上。 这时，用WebElement对象的text属性，获取文本内容，就会有问题。
+>
+> 使用 innerText 和 textContent 的区别是，前者只显示元素可见文本内容，后者显示所有内容（包括display属性为none的部分）
+
 - 获取元素属性 .get_attribute('class')
+- 获取整个元素对应的HTML
   - .get_attribute('outerHTML') 可以获得整个元素的所有内容
   - .get_attribute('innerHTML') 可以获得元素内部的内容
+- 
 
 
 
 ## CSS表达式选择元素
+
+最强大的元素选择器
 
 1. 基本用法
 
 ```python
 css = wd.find_elements(By.CSS_SELECTOR, 'CSS Selector参数')
 ```
-
-
 
 |          | CSS Selector                                                 | 其他方式                                |
 | :------- | ------------------------------------------------------------ | --------------------------------------- |
@@ -124,19 +170,21 @@ css = wd.find_elements(By.CSS_SELECTOR, 'CSS Selector参数')
 | tag名    | wd.find_elements(By.CSS_SELECTOR, 'tag名')                   | wd.find_elements(By.TAG_NAME, "tag名")  |
 | 其他属性 | wd.find_elements(By.CSS_SELECTOR, '[属性]')  (如链接等其他属性值) |                                         |
 
-- 也可以进行混用，如 .plant[name = 'SKnet'] 表示class属性是plant**且**name为SKnet的元素，注意中间不能加空格，原因看第二点
+- 选择语法联合使用
 
-- 两个属性之间是或关系， 加上 **,** 如  #t1 span,p 表示 t1中的span 和外面所有的p
+也可以进行混用，如 .plant[name = 'SKnet'] 表示class属性是plant**且**name为SKnet的元素，注意中间不能加空格，原因看第二点
 
-  如果是要 t1中的span和p  只能 #t1 span, #t2 p
-  
-- 属性值不一定要完全等于，写法如下
+- 组选择：
 
-  - 包含什么字符串 *=
-  - 以什么开头 ^=
-  - 以什么结尾 $=
+加上 **,**表示两个属性之间是或关系，如  `#t1 span,p` 表示 t1中的span 和外面所有的p；如果是要 t1中的span和p  只能 `#t1 span, #t2 p`
 
-
+>  属性值不一定要完全等于，写法如下
+>
+> - 包含什么字符串 *=
+> - 以什么开头 ^=
+> - 以什么结尾 $=
+>
+> 另外注意：组选择结果列表中，选中元素排序， 不是 组表达式的次序， 而是符合这些表达式的元素，在HTML文档中的出现的次序。
 
 
 2. 选择子元素和后代元素
@@ -183,11 +231,21 @@ css = wd.find_elements(By.CSS_SELECTOR, 'CSS Selector参数')
 
 ## frame切换
 
-html语法中 iframe元素或者 frame元素可以包含一个被嵌入的html文档，而css选择器选择范围并不包含嵌入的html文档
+html语法中 iframe元素或者 frame元素可以包含一个被嵌入的html文档
 
-方法 : **wd.switch_to.frame** ('frame的描述(如其id class name等任意属性)')
+在我们使用selenium打开一个网页时， 我们的操作范围缺省是当前的 html ， 并不包含被嵌入的html文档里面的内容。
 
-返回外部 wd.switch_to.default_content()
+方法 : `wd.switch_to.frame(frame_reference)`
+
+> 其中， frame_reference 可以是 
+>
+> frame 元素的 id ，name属性值 
+>
+> 或者frame 所对应的 WebElement 对象 ，例如 `wd.switch_to.frame(wd.find_element(By.TAG_NAME, "iframe"))`
+
+tips： 我们把最外部的html称之为主html
+
+返回主html: `wd.switch_to.default_content()`
 
 
 
@@ -369,3 +427,9 @@ wd.switch_to.window(mainWindow)
 5. 注意点
 
    通过WebElement对象来选择其内部的元素，必须 './/p'加一个点才能表示是这个对象的子元素，否则搜索范围仍然为整个网页 
+
+## 关闭
+
+
+
+wd.quit()

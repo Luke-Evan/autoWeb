@@ -8,8 +8,9 @@ PASSWORD = "rlbnjdx3312"
 
 # 创建 WebDriver 对象，指明使用chrome浏览器驱动
 wd = webdriver.Edge()
-
+# 打开指定网站
 wd.get("https://xk.nju.edu.cn/")
+
 wd.implicitly_wait(10)
 account = wd.find_element(By.ID, "loginName")
 account.send_keys(ACCOUNT)
