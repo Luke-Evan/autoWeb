@@ -12,6 +12,10 @@ https://www.byhy.net/tut/auto/selenium/01/
 
 创建WebDriver 实例对象 指明使用哪个浏览器的驱动
 
+EDGE: 点击菜单 `帮助和反馈` > `关于Microsoft Edge` ，在弹出界面中，查看到版本
+
+[Microsoft Edge WebDriver - Microsoft Edge Developer](https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/#downloads)
+
 通过get 方法 让浏览器打开指定网站
 
 ```python
@@ -253,11 +257,9 @@ tips： 我们把最外部的html称之为主html
 
 点击一个新窗口的链接后，程序仍在操作原来的窗口
 
-
-
 方法 ：**wd.switch_to.window(handle)**
 
-handle即句柄，类似于网页窗口的ID。而WebDriver对象中有一个window_handles的属性，存放当前浏览器中所有的窗口句柄，故而可以通过类似下面的代码进行窗口切换
+handle即句柄，类似于网页窗口的ID。而WebDriver对象中有一个window_handles的属性，存放当前浏览器中所有的窗口句柄，故而可以通过类似下面的代码进行窗口切换（遍历查找）
 
 ```python
 for handle in wd.window_handles:
@@ -283,13 +285,11 @@ wd.switch_to.window(mainWindow)
 
 ## 选择框
 
-
-
 1. **radio** (input type = "radio" 单选框)
 
    根据value等属性通过 css的选择方式进行选择
 
-2. checkbox (input type = "checkbox" 多选框)
+2. **checkbox** (input type = "checkbox" 多选框)
 
    为了保证所选的是自己想要的，思路是
 
@@ -298,7 +298,7 @@ wd.switch_to.window(mainWindow)
 
    通过 [checked = "checked"] 锁定所有已选的
 
-3. select （select标签，每一项为option， 多选在select中有一个multiple属性)
+3. **select** （select标签，每一项为option， 多选在select中有一个multiple属性)
 
    Selenium中有专门Select类
 
@@ -307,129 +307,128 @@ wd.switch_to.window(mainWindow)
    select = Select(wd.find_elements(By.ID, "sss")) #创建Select对象 
    ```
 
-   
-
    - 选择元素
-     - 根据value选择对应option     select.select_by_value()
-     - 根据选项的可见文本              select.select_by_visible_text()
-     - 根据次序 select                      select.select_by_index()
-   - 取消选择 deselect
-
-
+     - 根据value选择对应option     `select.select_by_value() ; deselect_by_value()`
+     - 根据选项的可见文本              `select.select_by_visible_text() ; deselect_by_visible_text()`
+     - 根据次序 select                      `select.select_by_index() ; deselect_by_index ` 
+   - 取消选择 select.deselect_all()
 
 
 
 ## 其他技巧
 
+### 更多操作
 
+如鼠标右键 双击 移动鼠标到某个元素 鼠标拖拽等
 
-1. 更多操作，如鼠标右键 双击 移动鼠标到某个元素 鼠标拖拽等
+在ActionChains类中有更多操作
 
-   在ActionChains类中有更多操作
+### 冻结界面
 
+有些网页鼠标移到某个元素上出来其他元素，但是移开就消失，为了查看其对应的源码，故而就要冻结住动态显示的元素
 
+在Console中执行 setTimeout(function(){debugger}, 5000)
 
- 2. 冻结界面
+表示过5000毫秒后进行debug，debug模式会冻住整个界面
 
-    有些网页鼠标移到某个元素上出来其他元素，但是移开就消失，为了查看其对应的源码，故而就要冻结住动态显示的元素
+### 弹出框
 
-    在Console中执行 setTimeout(function(){debugger}, 5000)
+1. alert 
 
-    表示过5000毫秒后进行debug，debug模式会冻住整个界面
+- 通知信息，只有确认
 
+- ```python
+  driver.switch_to.alert.accept() #确认信息
+  driver.switch_to.alert.text() #获取信息
+  ```
 
+2. confirm 
 
-3. 弹出框
+- 需要用户进行某个操作，有确认或者取消
 
-   - alert 
+- ```python
+  driver.switch_to.alert.accept()
+  driver.switch_to.alert.dismiss()
+  ```
 
-     - 通知信息，只有确认
+3. prompt
 
-     - ```python
-       driver.switch_to.alert.accept() #确认信息
-       driver.switch_to.alert.text() #获取信息
-       ```
+- 需要提供其他信息才能继续，需要输入一些信息 
 
-   - confirm 
+- ```python
+  # 获取 alert 对象
+  alert = driver.switch_to.alert
+  
+  # 输入信息，并且点击 OK 按钮 提交
+  alert.send_keys('web自动化 - selenium')
+  alert.accept()
+  ```
 
-     - 需要用户进行某个操作，有确认或者取消
-     - 代码和alert一样 (.alert也一样)， 取消是  .dismiss()
-
-   - prompt
-
-     - 需要提供其他信息才能继续，需要输入一些信息 
-     - 发送信心 .send_keys()
-
-
+> 有些弹窗并非浏览器的alert 窗口，而是**html元素**，这种对话框，只需要通过之前介绍的选择器选中并进行相应的操作就可以了。
 
 
 
 ## Xpath选择器
 
-
+### 语法简介
 
 根节点用 **/** 表示，表示方式跟linux一样，和CSS中的 > 类似, 表示直接子节点
 
+从根节点写下来的叫做绝对路径
 
+`elements = driver.find_elements(By.XPATH, "//*[@id="tabs-04-02-tab"]")`
 
-1. 基本语法
+//div 表示所有的div标签
 
-   - 从根节点写下来的叫做绝对路径
+//div//p  表示div后面的所有p元素
 
-   - //div 表示所有的div标签
+通配符 *  (和linux一模一样)
 
-   - //div//p  表示div后面的所有p元素
+### 根据属性选择
 
-   - 通配符 *  (和linux一模一样)
+ - 格式 [@属性名= '属性值']  (属性值一定要有引号)
+ - 例如  //*[@id = 'west'] 表示选择所有id值为west的标签
+ - 如果一个元素的class有多个， 必须完全一致才能选中这个元素
+   - 如 <div class = 'captial huge-city'>
+   - 需要 //div[@class = "captial huge-city"] 才能选中这个标签，css中选择一个class就可以选择到它
+ - 包含关系 [contains(@style, ' color')]  表示style属性里面包含color
+ - 开头关系 [starts-with(@style, 'color')] 表示style属性以color开头
+ - ends-with是xpath2.0的语法，但是大多数浏览器不支持
 
+### 按次序选择
 
+- 父元素的某类型的第某个元素
+  - //p[2] 表示父元素中第二个p类型的子元素
+  - 等价于 p:nth-of-type(2)
+- 父元素的第某个子元素
+  - //*[2]
+- 倒数第某个
+  - //*[last()] 表示倒数第一个
+  - //*[last()-1]表示倒数第二个
+- 范围选择
+  - 选择option类型的前两个节点
+    - //option[position() <= 2]
 
- 	2. 根据属性选择
- 	 - 格式 [@属性名= '属性值']  (属性值一定要有引号)
- 	 - 例如  //*[@id = 'west'] 表示选择所有id值为west的标签
- 	 - 如果一个元素的class有多个， 必须完全一致才能选中这个元素
- 	   - 如 <div class = 'captial huge-city'>
- 	   - 需要 //div[@class = "captial huge-city"] 才能选中这个标签，css中选择一个class就可以选择到它
- 	 - 包含关系 [contains(@style, ' color')]  表示style属性里面包含color
- 	 - 开头关系 [starts-with(@style, 'color')] 表示style属性以color开头
- 	 - ends-with是xpath2.0的语法，但是大多数浏览器不支持
+### 组选择和兄弟节点
 
+ - //option | //h4表示选择所有的option和h4
+ - **选择父节点**
+   - /..
+   - //*[@id='china']/..   表示id为china元素的父节点
+   - 适用于本身没特征但子节点有id等属性的标签
+ - following-sibling:: 选择后续兄弟节点
+   - following-sibling::* 表示所有
+   - following-sibling::select 表示后续的所有select
+ - preceding-sibling:: 选择前面的兄弟节点
 
+### 注意点
 
-3. 按次序选择
-   - 父元素的某类型的第某个元素
-     - //p[2] 表示父元素中第二个p类型的子元素
-     - 等价于 p:nth-of-type(2)
-   - 父元素的第某个子元素
-     - //*[2]
-   - 倒数第某个
-     - //*[last()] 表示倒数第一个
-     - //*[last()-1]表示倒数第二个
-   - 范围选择
-     - 选择option类型的前两个节点
-       - //option[position() <= 2]
+通过WebElement对象来选择其内部的元素，必须 './/p'加一个点才能表示是这个对象的子元素，否则搜索范围仍然为整个网页 
 
+### 网页直接复制
 
-
- 	4. 组选择和兄弟节点
- 	 - //option | //h4表示选择所有的option和h4
- 	 - **选择父节点**
- 	   - /..
- 	   - //*[@id='china']/..   表示id为china元素的父节点
- 	   - 适用于本身没特征但子节点有id等属性的标签
- 	 - following-sibling:: 选择后续兄弟节点
- 	   - following-sibling::* 表示所有
- 	   - following-sibling::select 表示后续的所有select
- 	 - preceding-sibling:: 选择前面的兄弟节点
-
-
-
-5. 注意点
-
-   通过WebElement对象来选择其内部的元素，必须 './/p'加一个点才能表示是这个对象的子元素，否则搜索范围仍然为整个网页 
+![xpath](https://gitee.com/luke3312/pictures/raw/master/after/xpath.png)
 
 ## 关闭
-
-
 
 wd.quit()
