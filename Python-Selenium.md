@@ -1,3 +1,7 @@
+[TOC]
+
+
+
 # Python-Selenium
 
 https://www.byhy.net/tut/auto/selenium/01/
@@ -132,28 +136,28 @@ spans = element.find_elements(By.TAG_NAME, 'span')
 
 ### 获取元素信息
 
-- 获取文本内容
+获取文本内容
 
-  - element .text     (尖括号内的文本)
+- element .text     (尖括号内的文本)
 
-  - 对于input的输入框, 如果要获得已经输入的文本, 用.get_attribute ('value')
+- 对于input的输入框, 如果要获得已经输入的文本, 用.get_attribute ('value')
 
-  - .text 出了些问题时
+- .text 出了些问题时
 
-    ```html
-    .get_attribute('innerText')
-    .get_attribute('textContent')
-    ```
+  ```html
+  .get_attribute('innerText')
+  .get_attribute('textContent')
+  ```
 
-> 有时候，元素的文本内容没有展示在界面上，或者没有完全完全展示在界面上。 这时，用WebElement对象的text属性，获取文本内容，就会有问题。
+> element .text 只能可以获取元素 **展示在界面上的** 文本内容。但有时候，元素的文本内容没有展示在界面上，或者没有完全完全展示在界面上。 这时，用WebElement对象的text属性，获取文本内容，就会有问题。
 >
 > 使用 innerText 和 textContent 的区别是，前者只显示元素可见文本内容，后者显示所有内容（包括display属性为none的部分）
 
-- 获取元素属性 .get_attribute('class')
-- 获取整个元素对应的HTML
-  - .get_attribute('outerHTML') 可以获得整个元素的所有内容
-  - .get_attribute('innerHTML') 可以获得元素内部的内容
-- 
+获取元素属性 .get_attribute('class')
+
+获取整个元素对应的HTML
+- .get_attribute('outerHTML') 可以获得整个元素的所有内容
+- .get_attribute('innerHTML') 可以获得元素内部的内容
 
 
 
@@ -253,6 +257,8 @@ tips： 我们把最外部的html称之为主html
 
 
 
+
+
 ## 窗口切换
 
 点击一个新窗口的链接后，程序仍在操作原来的窗口
@@ -327,13 +333,11 @@ wd.switch_to.window(mainWindow)
 
 有些网页鼠标移到某个元素上出来其他元素，但是移开就消失，为了查看其对应的源码，故而就要冻结住动态显示的元素
 
-在Console中执行 setTimeout(function(){debugger}, 5000)
-
-表示过5000毫秒后进行debug，debug模式会冻住整个界面
+在Console中执行` setTimeout(function(){debugger}, 5000)`表示过5000毫秒后进行debug，debug模式会冻住整个界面
 
 ### 弹出框
 
-1. alert 
+alert 
 
 - 通知信息，只有确认
 
@@ -342,7 +346,7 @@ wd.switch_to.window(mainWindow)
   driver.switch_to.alert.text() #获取信息
   ```
 
-2. confirm 
+confirm 
 
 - 需要用户进行某个操作，有确认或者取消
 
@@ -351,7 +355,7 @@ wd.switch_to.window(mainWindow)
   driver.switch_to.alert.dismiss()
   ```
 
-3. prompt
+prompt
 
 - 需要提供其他信息才能继续，需要输入一些信息 
 
@@ -376,7 +380,9 @@ wd.switch_to.window(mainWindow)
 
 从根节点写下来的叫做绝对路径
 
-`elements = driver.find_elements(By.XPATH, "//*[@id="tabs-04-02-tab"]")`
+`elements = driver.find_elements(By.XPATH, ’//*[@id="tabs-04-02-tab"]‘)`
+
+> python单引号里可以包含双引号，多重引号只能转义
 
 //div 表示所有的div标签
 
@@ -415,7 +421,6 @@ wd.switch_to.window(mainWindow)
  - **选择父节点**
    - /..
    - //*[@id='china']/..   表示id为china元素的父节点
-   - 适用于本身没特征但子节点有id等属性的标签
  - following-sibling:: 选择后续兄弟节点
    - following-sibling::* 表示所有
    - following-sibling::select 表示后续的所有select
