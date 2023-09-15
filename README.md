@@ -1,3 +1,2 @@
-# aotoWeb
-## seize courses 
-## browse the courses online
+# seizeCourse
+collect sources and codes for seize classes

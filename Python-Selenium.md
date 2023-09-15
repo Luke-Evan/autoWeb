@@ -255,10 +255,6 @@ tips： 我们把最外部的html称之为主html
 
 返回主html: `wd.switch_to.default_content()`
 
-
-
-
-
 ## 窗口切换
 
 点击一个新窗口的链接后，程序仍在操作原来的窗口
