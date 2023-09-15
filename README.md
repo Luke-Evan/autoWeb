@@ -1,2 +1,3 @@
-# seizeCourse
-collect sources and codes for seize classes
+# autoWeb
+seize classes
+browse online courses
